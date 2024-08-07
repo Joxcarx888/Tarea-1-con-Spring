@@ -33,7 +33,7 @@ public class CategoriaController{
     @Autowired
     CategoriaService categoriaService;
 
-    @GetMapping("/")
+    @GetMapping("/categoria")
     public List<Categoria> listarCategorias(){
         return categoriaService.listarCategorias();
     }
