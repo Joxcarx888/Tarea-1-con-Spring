@@ -23,24 +23,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
-
-
-
 @Controller
 @RestController
-@RequestMapping("categoria")
+@RequestMapping("")
 public class CategoriaController{
     @Autowired
     CategoriaService categoriaService;
 
-    @GetMapping("/categoria")
+    @GetMapping("/categorias")
     public List<Categoria> listarCategorias(){
         return categoriaService.listarCategorias();
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Categoria> buscarCategoriaPorId(@PathVariable Long id){
+    @GetMapping("/categoria")
+    public ResponseEntity<Categoria> buscarCategoriaPorId(@RequestParam Long id){
         try {
             Categoria categoria = categoriaService.buscarCategoriaPorId(id);
             return ResponseEntity.ok(categoria);
@@ -50,13 +47,19 @@ public class CategoriaController{
     }
     
 
-    @PostMapping("/")
+    @PostMapping("/categoria")
     public ResponseEntity<Map<String,String >> agregarCategoria(@RequestBody Categoria categoria) {
         Map<String,String> response = new HashMap<>();
         try {
-            categoriaService.guardarCategoria(categoria);
-            response.put("message","Categoria agregada con exito" );
-            return ResponseEntity.ok(response);
+            if(!categoriaService.verificarCategoriaDuplicada(categoria)){
+                categoriaService.guardarCategoria(categoria);
+                response.put("message","Categoria agregada con exito" );
+                return ResponseEntity.ok(response);
+            }else{
+                response.put("message" ,"error" );
+                response.put("err" ,"Algo de Valor unico esta siendo duplicado" );
+                return ResponseEntity.badRequest().body(response);
+            }
         } catch (Exception e) {
             response.put("message" ,"error" );
             response.put("err" ,"No se ha agregado la Categoria" );
@@ -64,15 +67,23 @@ public class CategoriaController{
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity <Map<String, String>> editarCategoria(@PathVariable Long id, @RequestBody Categoria categoriaNew){
+    @PutMapping("/categoria")
+    public ResponseEntity <Map<String, String>> editarCategoria(@RequestParam Long id, @RequestBody Categoria categoriaNew){
         Map<String,String> response = new HashMap<>();
         try {
             Categoria categoria = categoriaService.buscarCategoriaPorId(id);
             categoria.setNombreCategoria(categoriaNew.getNombreCategoria());
-            categoriaService.guardarCategoria(categoria);
-            response.put("message", "Se he modificado correctamente");
-            return ResponseEntity.ok(response);
+
+            if(!categoriaService.verificarCategoriaDuplicada(categoria)){
+                categoriaService.guardarCategoria(categoria);
+                response.put("message", "Se he modificado correctamente");
+                return ResponseEntity.ok(response);
+            }else{
+                response.put("message" ,"error" );
+                response.put("err" ,"Algo de Valor unico esta siendo duplicado" );
+                return ResponseEntity.badRequest().body(response);
+            }
+            
         } catch (Exception e) {
             response.put("message" ,"error" );
             response.put("err" ,"No se ha agregado la Categoria" );
@@ -82,8 +93,8 @@ public class CategoriaController{
 
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> eliminarCategoria(@PathVariable Long id){
+    @DeleteMapping("/categoria")
+    public ResponseEntity<Map<String, String>> eliminarCategoria(@RequestParam Long id){
         Map<String, String> response = new HashMap<>();
         try {
             Categoria categoria = categoriaService.buscarCategoriaPorId(id);
