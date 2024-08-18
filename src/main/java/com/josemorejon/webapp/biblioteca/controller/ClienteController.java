@@ -27,17 +27,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RestController
-@RequestMapping("cliente")
+@RequestMapping("")
 public class ClienteController{
     @Autowired
     ClienteService clienteService;
 
-    @GetMapping("/")
+    @GetMapping("/clientes")
     public List<Cliente> listarClientes(){
         return clienteService.listarClientes();
     }
 
-    @GetMapping("/{dpi}")
+    @GetMapping("/cliente")
     public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long dpi){
         try {
             Cliente cliente = clienteService.buscarClientePorId(dpi);
@@ -47,7 +47,7 @@ public class ClienteController{
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("/cliente")
     public ResponseEntity<Map<String,String >> agregarCliente(@RequestBody Cliente cliente) {
         Map<String,String> response = new HashMap<>();
         try {
@@ -61,7 +61,7 @@ public class ClienteController{
         }
     }
 
-    @PutMapping("/{dpi}")
+    @PutMapping("/cliente")
     public ResponseEntity <Map<String, String>> editarCliente(@PathVariable Long dpi, @RequestBody Cliente clienteNew){
         Map<String,String> response = new HashMap<>();
         try {
@@ -81,7 +81,7 @@ public class ClienteController{
 
     }
 
-    @DeleteMapping("/{dpi}")
+    @DeleteMapping("/cliente")
     public ResponseEntity<Map<String, String>> eliminarCliente(@PathVariable Long dpi){
         Map<String, String> response = new HashMap<>();
         try {
